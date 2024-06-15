@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import "../components/Countdown.css"; // Import the CSS file
 
 function Countdown() {
   const [mainHours, setMainHours] = useState(0);
@@ -78,16 +79,16 @@ function Countdown() {
   }, []);
 
   return (
-    <div>
-      <div>
+    <div className="countdown-container">
+      <div className="time-display">
         <h2>Yayın Süresi</h2>
-        <input type="number" value={mainHours} />
+        <input type="number" value={mainHours} readOnly />
         :
-        <input type="number" value={mainMinutes} />
+        <input type="number" value={mainMinutes} readOnly />
         :
-        <input type="number" value={mainSeconds} />
+        <input type="number" value={mainSeconds} readOnly />
       </div>
-      <div>
+      <div className="time-display">
         <h2>Video Süresi</h2>
         <b>{intervalHours.toString().padStart(2, "0")}:</b>
         <b>{intervalMinutes.toString().padStart(2, "0")}:</b>
@@ -95,19 +96,22 @@ function Countdown() {
       </div>
       <input
         type="text"
+        className="title-input"
         placeholder="Enter title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
-      <button onClick={startIntervalTimer}>Videoyu başlat</button>
-      <button onClick={saveIntervalTime}>Videoyu kaydet</button>
-      <button
-        onClick={() => {
-          setIsStreamStarted(!isStreamStarted);
-        }}
-      >
-        Yayın süresini durdur
-      </button>
+      <div className="buttons">
+        <button onClick={startIntervalTimer}>Videoyu başlat</button>
+        <button onClick={saveIntervalTime}>Videoyu kaydet</button>
+        <button
+          onClick={() => {
+            setIsStreamStarted(!isStreamStarted);
+          }}
+        >
+          Yayın süresini durdur
+        </button>
+      </div>
       <ul>
         {savedTimes.map((entry, index) => (
           <li key={index}>
