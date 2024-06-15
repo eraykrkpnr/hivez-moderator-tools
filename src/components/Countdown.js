@@ -24,7 +24,7 @@ function Countdown() {
   };
 
   const getMainTime = () => {
-    if (isStreamStarted != 0) {
+    if (isStreamStarted !== 0) {
       const timeElapsed = Date.now() - mainTimerRef.current;
       setMainHours(Math.floor((timeElapsed / (1000 * 60 * 60)) % 24));
       setMainMinutes(Math.floor((timeElapsed / 1000 / 60) % 60));
@@ -33,9 +33,10 @@ function Countdown() {
   };
 
   const startIntervalTimer = () => {
-    setIntervalStartTime(Date.now());
+    const startTime = Date.now();
+    setIntervalStartTime(startTime);
     intervalTimerRef.current = setInterval(() => {
-      const intervalElapsed = Date.now() - intervalStartTime;
+      const intervalElapsed = Date.now() - startTime;
       setIntervalHours(Math.floor((intervalElapsed / (1000 * 60 * 60)) % 24));
       setIntervalMinutes(Math.floor((intervalElapsed / 1000 / 60) % 60));
       setIntervalSeconds(Math.floor((intervalElapsed / 1000) % 60));
@@ -109,7 +110,7 @@ function Countdown() {
             setIsStreamStarted(!isStreamStarted);
           }}
         >
-          Yayın süresini durdur
+          Yayın süresini {isStreamStarted ? "durdur" : "başlat"}
         </button>
       </div>
       <ul>
