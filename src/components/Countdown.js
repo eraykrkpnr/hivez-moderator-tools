@@ -13,6 +13,8 @@ function Countdown() {
   const [savedTimes, setSavedTimes] = useState([]);
   const [title, setTitle] = useState("");
 
+  const [isStreamStarted, setIsStreamStarted] = useState(1);
+
   const mainTimerRef = useRef(Date.now());
   const intervalTimerRef = useRef(null);
 
@@ -21,10 +23,12 @@ function Countdown() {
   };
 
   const getMainTime = () => {
-    const timeElapsed = Date.now() - mainTimerRef.current;
-    setMainHours(Math.floor((timeElapsed / (1000 * 60 * 60)) % 24));
-    setMainMinutes(Math.floor((timeElapsed / 1000 / 60) % 60));
-    setMainSeconds(Math.floor((timeElapsed / 1000) % 60));
+    if (isStreamStarted != 0) {
+      const timeElapsed = Date.now() - mainTimerRef.current;
+      setMainHours(Math.floor((timeElapsed / (1000 * 60 * 60)) % 24));
+      setMainMinutes(Math.floor((timeElapsed / 1000 / 60) % 60));
+      setMainSeconds(Math.floor((timeElapsed / 1000) % 60));
+    }
   };
 
   const startIntervalTimer = () => {
@@ -77,9 +81,11 @@ function Countdown() {
     <div>
       <div>
         <h2>Yayın Süresi</h2>
-        <b>{mainHours.toString().padStart(2, "0")}:</b>
-        <b>{mainMinutes.toString().padStart(2, "0")}:</b>
-        <b>{mainSeconds.toString().padStart(2, "0")}</b>
+        <input type="number" value={mainHours} />
+        :
+        <input type="number" value={mainMinutes} />
+        :
+        <input type="number" value={mainSeconds} />
       </div>
       <div>
         <h2>Video Süresi</h2>
@@ -95,6 +101,13 @@ function Countdown() {
       />
       <button onClick={startIntervalTimer}>Videoyu başlat</button>
       <button onClick={saveIntervalTime}>Videoyu kaydet</button>
+      <button
+        onClick={() => {
+          setIsStreamStarted(!isStreamStarted);
+        }}
+      >
+        Yayın süresini durdur
+      </button>
       <ul>
         {savedTimes.map((entry, index) => (
           <li key={index}>
