@@ -16,11 +16,16 @@ function Countdown() {
 
   const [isStreamStarted, setIsStreamStarted] = useState(1);
 
+  const [initialHours, setInitialHours] = useState(0);
+  const [initialMinutes, setInitialMinutes] = useState(0);
+  const [initialSeconds, setInitialSeconds] = useState(0);
+
   const mainTimerRef = useRef(Date.now());
   const intervalTimerRef = useRef(null);
 
-  const startMainTimer = () => {
-    mainTimerRef.current = Date.now();
+  const startMainTimer = (initialTimeInMs) => {
+    const now = Date.now();
+    mainTimerRef.current = now - initialTimeInMs;
   };
 
   const getMainTime = () => {
@@ -74,20 +79,30 @@ function Countdown() {
   };
 
   useEffect(() => {
-    startMainTimer();
+    const initialTimeInMs =
+      initialHours * 60 * 60 * 1000 +
+      initialMinutes * 60 * 1000 +
+      initialSeconds * 1000;
+    startMainTimer(initialTimeInMs);
     const mainInterval = setInterval(() => getMainTime(), 1000);
     return () => clearInterval(mainInterval);
   }, []);
 
+  const handleManualStart = () => {
+    const initialTimeInMs =
+      initialHours * 60 * 60 * 1000 +
+      initialMinutes * 60 * 1000 +
+      initialSeconds * 1000;
+    startMainTimer(initialTimeInMs);
+  };
+
   return (
     <div className="countdown-container">
-      <div className="time-display">
+      <div className="time-display" style={{ fontSize: "24px" }}>
         <h2>Yayın Süresi</h2>
-        <input type="number" value={mainHours} readOnly />
-        :
-        <input type="number" value={mainMinutes} readOnly />
-        :
-        <input type="number" value={mainSeconds} readOnly />
+        <b>{mainHours.toString().padStart(2, "0")}:</b>
+        <b>{mainMinutes.toString().padStart(2, "0")}:</b>
+        <b>{mainSeconds.toString().padStart(2, "0")}</b>
       </div>
       <div className="time-display">
         <h2>Video Süresi</h2>
@@ -105,13 +120,6 @@ function Countdown() {
       <div className="buttons">
         <button onClick={startIntervalTimer}>Videoyu başlat</button>
         <button onClick={saveIntervalTime}>Videoyu kaydet</button>
-        <button
-          onClick={() => {
-            setIsStreamStarted(!isStreamStarted);
-          }}
-        >
-          Yayın süresini {isStreamStarted ? "durdur" : "başlat"}
-        </button>
       </div>
       <ul>
         {savedTimes.map((entry, index) => (
@@ -120,6 +128,35 @@ function Countdown() {
           </li>
         ))}
       </ul>
+      <div className="time-display" style={{ paddingTop: "20px" }}>
+        <h3>Manuel Başlangıç Zamanı Ayarla</h3>
+        <input
+          type="number"
+          placeholder="Saat"
+          value={initialHours}
+          onChange={(e) => setInitialHours(parseInt(e.target.value) || 0)}
+        />
+        :
+        <input
+          type="number"
+          placeholder="Dakika"
+          value={initialMinutes}
+          onChange={(e) => setInitialMinutes(parseInt(e.target.value) || 0)}
+        />
+        :
+        <input
+          type="number"
+          placeholder="Saniye"
+          value={initialSeconds}
+          onChange={(e) => setInitialSeconds(parseInt(e.target.value) || 0)}
+        />
+        <div
+          className="buttons"
+          style={{ justifyContent: "center", paddingTop: "12px" }}
+        >
+          <button onClick={handleManualStart}>Başlangıç Zamanını Ayarla</button>
+        </div>
+      </div>
     </div>
   );
 }
