@@ -48,7 +48,11 @@ function EkipList() {
         <div className="split-list">
           <ul>
             {firstHalf.map((item, index) => (
-              <li key={index}>
+              <li
+                key={index}
+                className={item.selected ? "selected" : ""}
+                onClick={() => handleCheckboxChange(index)}
+              >
                 <input
                   type="checkbox"
                   checked={item.selected}
@@ -60,7 +64,11 @@ function EkipList() {
           </ul>
           <ul>
             {secondHalf.map((item, index) => (
-              <li key={index + half}>
+              <li
+                key={index + half}
+                className={item.selected ? "selected" : ""}
+                onClick={() => handleCheckboxChange(index + half)}
+              >
                 <input
                   type="checkbox"
                   checked={item.selected}

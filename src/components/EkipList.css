@@ -58,6 +58,15 @@ html {
   border-radius: 5px;
   display: flex;
   align-items: center;
+  cursor: pointer;
+}
+
+.split-list ul li:hover {
+  background-color: #505050;
+}
+
+.split-list ul li.selected {
+  background-color: #505050;
 }
 
 .split-list ul li input {
