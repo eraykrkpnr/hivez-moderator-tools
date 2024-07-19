@@ -36,22 +36,41 @@ function EkipList() {
     setSelectedNames(selected);
   };
 
+  // İsimleri ikiye bölme
+  const half = Math.ceil(names.length / 2);
+  const firstHalf = names.slice(0, half);
+  const secondHalf = names.slice(half);
+
   return (
     <div className="ekiplist-container">
       <div className="list-container">
         <h1>Ekip Listesi</h1>
-        <ul>
-          {names.map((item, index) => (
-            <li key={index}>
-              <input
-                type="checkbox"
-                checked={item.selected}
-                onChange={() => handleCheckboxChange(index)}
-              />
-              <label>{item.name}</label>
-            </li>
-          ))}
-        </ul>
+        <div className="split-list">
+          <ul>
+            {firstHalf.map((item, index) => (
+              <li key={index}>
+                <input
+                  type="checkbox"
+                  checked={item.selected}
+                  onChange={() => handleCheckboxChange(index)}
+                />
+                <label>{item.name}</label>
+              </li>
+            ))}
+          </ul>
+          <ul>
+            {secondHalf.map((item, index) => (
+              <li key={index + half}>
+                <input
+                  type="checkbox"
+                  checked={item.selected}
+                  onChange={() => handleCheckboxChange(index + half)}
+                />
+                <label>{item.name}</label>
+              </li>
+            ))}
+          </ul>
+        </div>
         <button onClick={handleSubmit}>Listeyi Oluştur</button>
       </div>
       <div className="selected-names-container">
