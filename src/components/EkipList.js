@@ -7,6 +7,7 @@ function EkipList() {
     { name: "Unicorn (Burcu)", selected: false },
     { name: "Sado_Mi (Sadullah Abi)", selected: false },
     { name: "FiltreKaffe (Esra)", selected: false },
+    { name: "13th (Oğuz)", selected: false },
     { name: "Watson", selected: false },
     { name: "Solitude (Arif)", selected: false },
     { name: "Nieve (Berfin)", selected: false },
