@@ -67,6 +67,7 @@ function EkipList() {
                   type="checkbox"
                   checked={item.selected}
                   onChange={() => handleCheckboxChange(index, "selected")}
+                  className="hidden-checkbox"
                 />
                 <label>{item.name}</label>
                 <input
@@ -91,6 +92,7 @@ function EkipList() {
                   onChange={() =>
                     handleCheckboxChange(index + half, "selected")
                   }
+                  className="hidden-checkbox"
                 />
                 <label>{item.name}</label>
                 <input
