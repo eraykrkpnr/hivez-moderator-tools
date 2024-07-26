@@ -122,6 +122,18 @@ function EkipList() {
             ? uncertainNames.join(" - ")
             : "Hiçbir isim belirsiz değil."}
         </div>
+        <div>
+          <b>
+            Kesin Gelecek Kişi Sayısı:{" "}
+            {selectedNames.length - uncertainNames.length}
+          </b>
+        </div>
+        <div>
+          <b>Gelme İhtimali Olan Kişi Sayısı: {uncertainNames.length}</b>
+        </div>
+        <div>
+          <b>Toplam Kişi Sayısı: {selectedNames.length}</b>
+        </div>
       </div>
     </div>
   );
