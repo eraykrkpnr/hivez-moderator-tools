@@ -3,30 +3,36 @@ import "./EkipList.css";
 
 function EkipList() {
   const [names, setNames] = useState([
-    { name: "H1vezZz", selected: true },
-    { name: "Unicorn (Burcu)", selected: false },
-    { name: "Sado_Mi (Sadullah Abi)", selected: false },
-    { name: "FiltreKaffe (Esra)", selected: false },
-    { name: "13th (Oğuz)", selected: false },
-    { name: "Watson", selected: false },
-    { name: "Solitude (Arif)", selected: false },
-    { name: "Nieve (Berfin)", selected: false },
-    { name: "Ecedeggy (Arda)", selected: false },
-    { name: "anilcakirr", selected: false },
-    { name: "Gracenessa", selected: false },
-    { name: "Architecra (Esra)", selected: false },
-    { name: "Gowner (Enes)", selected: false },
-    { name: "Koray752", selected: false },
-    { name: "Erva", selected: false },
-    { name: "Ceycey", selected: false },
-    { name: "Westiger (Cansu)", selected: false },
-    { name: "Attalian (Cem)", selected: false },
+    { name: "H1vezZz", selected: true, uncertain: false },
+    { name: "Unicorn (Burcu)", selected: false, uncertain: false },
+    { name: "Sado_Mi (Sadullah Abi)", selected: false, uncertain: false },
+    { name: "FiltreKaffe (Esra)", selected: false, uncertain: false },
+    { name: "13th (Oğuz)", selected: false, uncertain: false },
+    { name: "Watson", selected: false, uncertain: false },
+    { name: "Solitude (Arif)", selected: false, uncertain: false },
+    { name: "Nieve (Berfin)", selected: false, uncertain: false },
+    { name: "Ecedeggy (Arda)", selected: false, uncertain: false },
+    { name: "anilcakirr", selected: false, uncertain: false },
+    { name: "Gracenessa", selected: false, uncertain: false },
+    { name: "Architecra (Esra)", selected: false, uncertain: false },
+    { name: "Gowner (Enes)", selected: false, uncertain: false },
+    { name: "Koray752", selected: false, uncertain: false },
+    { name: "Erva", selected: false, uncertain: false },
+    { name: "Ceycey", selected: false, uncertain: false },
+    { name: "Westiger (Cansu)", selected: false, uncertain: false },
+    { name: "Attalian (Cem)", selected: false, uncertain: false },
   ]);
-  const [selectedNames, setSelectedNames] = useState([]);
 
-  const handleCheckboxChange = (index) => {
+  const [selectedNames, setSelectedNames] = useState([]);
+  const [uncertainNames, setUncertainNames] = useState([]);
+
+  const handleCheckboxChange = (index, type) => {
     const newNames = [...names];
-    newNames[index].selected = !newNames[index].selected;
+    if (type === "selected") {
+      newNames[index].selected = !newNames[index].selected;
+    } else if (type === "uncertain") {
+      newNames[index].uncertain = !newNames[index].uncertain;
+    }
     setNames(newNames);
   };
 
@@ -34,10 +40,13 @@ function EkipList() {
     const selected = names
       .filter((item) => item.selected)
       .map((item) => item.name);
+    const uncertain = names
+      .filter((item) => item.uncertain)
+      .map((item) => item.name);
     setSelectedNames(selected);
+    setUncertainNames(uncertain);
   };
 
-  // İsimleri ikiye bölme
   const half = Math.ceil(names.length / 2);
   const firstHalf = names.slice(0, half);
   const secondHalf = names.slice(half);
@@ -52,14 +61,20 @@ function EkipList() {
               <li
                 key={index}
                 className={item.selected ? "selected" : ""}
-                onClick={() => handleCheckboxChange(index)}
+                onClick={() => handleCheckboxChange(index, "selected")}
               >
                 <input
                   type="checkbox"
                   checked={item.selected}
-                  onChange={() => handleCheckboxChange(index)}
+                  onChange={() => handleCheckboxChange(index, "selected")}
                 />
                 <label>{item.name}</label>
+                <input
+                  type="checkbox"
+                  checked={item.uncertain}
+                  onChange={() => handleCheckboxChange(index, "uncertain")}
+                />
+                <label>?</label>
               </li>
             ))}
           </ul>
@@ -68,14 +83,24 @@ function EkipList() {
               <li
                 key={index + half}
                 className={item.selected ? "selected" : ""}
-                onClick={() => handleCheckboxChange(index + half)}
+                onClick={() => handleCheckboxChange(index + half, "selected")}
               >
                 <input
                   type="checkbox"
                   checked={item.selected}
-                  onChange={() => handleCheckboxChange(index + half)}
+                  onChange={() =>
+                    handleCheckboxChange(index + half, "selected")
+                  }
                 />
                 <label>{item.name}</label>
+                <input
+                  type="checkbox"
+                  checked={item.uncertain}
+                  onChange={() =>
+                    handleCheckboxChange(index + half, "uncertain")
+                  }
+                />
+                <label>?</label>
               </li>
             ))}
           </ul>
@@ -88,6 +113,12 @@ function EkipList() {
           {selectedNames.length > 0
             ? selectedNames.join(" - ")
             : "Hiçbir isim seçilmedi."}
+        </div>
+        <h1>Gelme İhtimali Olan İsimler</h1>
+        <div>
+          {uncertainNames.length > 0
+            ? uncertainNames.join(" - ")
+            : "Hiçbir isim belirsiz değil."}
         </div>
       </div>
     </div>
