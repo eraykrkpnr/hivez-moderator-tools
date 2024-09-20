@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
 import "./EkipList.css";
 
 const gameOptions = [
@@ -29,13 +29,34 @@ function EkipList() {
     { name: "Gowner (Enes)", selected: false, uncertain: false },
     { name: "Koray752", selected: false, uncertain: false },
     { name: "Erva", selected: false, uncertain: false },
-    { name: "Ceycey", selected: false, uncertain: false },
+    { name: "Ceycey (Ceylin)", selected: false, uncertain: false },
     { name: "Westiger (Cansu)", selected: false, uncertain: false },
     { name: "Attalian (Cem)", selected: false, uncertain: false },
+    { name: "Xeegn (Berkay)", selected: false, uncertain: false },
+    { name: "Wicanydd (İlkcan)", selected: false, uncertain: false },
+    { name: "RedB (Mert)", selected: false, uncertain: false },
+    { name: "Tsuna (Veysel)", selected: false, uncertain: false },
+    { name: "Wixiety (Doğukan)", selected: false, uncertain: false },
+    { name: "Mr.Takini", selected: false, uncertain: false },
   ]);
 
   const [selectedGame, setSelectedGame] = useState(null);
   const [results, setResults] = useState([]);
+
+  const customStyles = {
+    option: (provided) => ({
+      ...provided,
+      color: "black",
+    }),
+    control: (provided) => ({
+      ...provided,
+      color: "black",
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: "black",
+    }),
+  };
 
   const handleCheckboxChange = (index, type) => {
     const newNames = [...names];
@@ -77,6 +98,15 @@ function EkipList() {
     <div className="ekiplist-container">
       <div className="list-container">
         <h1>Ekip Listesi</h1>
+        <div className="game-select-container">
+          <CreatableSelect
+            options={gameOptions}
+            value={selectedGame}
+            onChange={handleGameChange}
+            placeholder="Bir oyun seçiniz veya yazınız..."
+            styles={customStyles}
+          />
+        </div>
         <div className="split-list">
           <ul>
             {firstHalf.map((item, index) => (
@@ -128,14 +158,6 @@ function EkipList() {
               </li>
             ))}
           </ul>
-        </div>
-        <div className="game-select-container">
-          <Select
-            options={gameOptions}
-            value={selectedGame}
-            onChange={handleGameChange}
-            placeholder="Select a game..."
-          />
         </div>
         <button onClick={handleSubmit}>Oyun Ekle</button>
       </div>
