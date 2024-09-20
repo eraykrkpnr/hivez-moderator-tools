@@ -1,5 +1,15 @@
 import React, { useState } from "react";
+import Select from "react-select";
 import "./EkipList.css";
+
+const gameOptions = [
+  { value: "Goose Goose Duck", label: "Goose Goose Duck" },
+  { value: "Feign", label: "Feign" },
+  { value: "Lockdown Protocol", label: "Lockdown Protocol" },
+  { value: "Dale & Dawson", label: "Dale & Dawson" },
+  { value: "Among Us", label: "Among Us" },
+  // Add more game options as needed
+];
 
 function EkipList() {
   const [names, setNames] = useState([
@@ -25,6 +35,7 @@ function EkipList() {
 
   const [selectedNames, setSelectedNames] = useState([]);
   const [uncertainNames, setUncertainNames] = useState([]);
+  const [selectedGame, setSelectedGame] = useState(null);
 
   const handleCheckboxChange = (index, type) => {
     const newNames = [...names];
@@ -45,6 +56,10 @@ function EkipList() {
       .map((item) => item.name);
     setSelectedNames(selected);
     setUncertainNames(uncertain);
+  };
+
+  const handleGameChange = (selectedOption) => {
+    setSelectedGame(selectedOption);
   };
 
   const half = Math.ceil(names.length / 2);
@@ -107,31 +122,23 @@ function EkipList() {
             ))}
           </ul>
         </div>
+        <div className="game-select-container">
+          <Select
+            options={gameOptions}
+            value={selectedGame}
+            onChange={handleGameChange}
+            placeholder="Select a game..."
+          />
+        </div>
         <button onClick={handleSubmit}>Listeyi Oluştur</button>
       </div>
       <div className="selected-names-container">
-        <h1>Seçilen İsimler</h1>
+        <h1>Menü</h1>
         <div>
-          {selectedNames.length > 0
-            ? selectedNames.join(" - ")
-            : "Hiçbir isim seçilmedi."}
-        </div>
-        <h1>Gelme İhtimali Olan İsimler</h1>
-        <div>
-          {uncertainNames.length > 0
-            ? uncertainNames.join(" - ")
-            : "Hiçbir isim belirsiz değil."}
-        </div>
-        <div>
-          <b>Kesin Gelecek Kişi Sayısı: {selectedNames.length}</b>
-        </div>
-        <div>
-          <b>Gelme İhtimali Olan Kişi Sayısı: {uncertainNames.length}</b>
-        </div>
-        <div>
-          <b>
-            Toplam Kişi Sayısı: {selectedNames.length + uncertainNames.length}
-          </b>
+          {selectedGame.label + ": "}
+          {selectedNames.map((name) => name + " - ")}
+          {uncertainNames.map((name) => name + " (?) - ")}
+          {" | " + selectedNames.length + " + " + uncertainNames.length + "  ?"}
         </div>
       </div>
     </div>
