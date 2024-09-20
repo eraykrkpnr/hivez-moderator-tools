@@ -110,6 +110,22 @@ html {
   text-align: center;
 }
 
+.selected-names-container button {
+  width: 100%;
+  background-color: #28b28f;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.game-container {
+  margin-bottom: 10px;
+}
+
 .hidden-checkbox {
   display: none;
 }

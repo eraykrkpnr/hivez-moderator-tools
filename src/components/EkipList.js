@@ -3,6 +3,7 @@ import Select from "react-select";
 import "./EkipList.css";
 
 const gameOptions = [
+  { value: "IRL", label: "IRL" },
   { value: "Goose Goose Duck", label: "Goose Goose Duck" },
   { value: "Feign", label: "Feign" },
   { value: "Lockdown Protocol", label: "Lockdown Protocol" },
@@ -33,9 +34,8 @@ function EkipList() {
     { name: "Attalian (Cem)", selected: false, uncertain: false },
   ]);
 
-  const [selectedNames, setSelectedNames] = useState([]);
-  const [uncertainNames, setUncertainNames] = useState([]);
   const [selectedGame, setSelectedGame] = useState(null);
+  const [results, setResults] = useState([]);
 
   const handleCheckboxChange = (index, type) => {
     const newNames = [...names];
@@ -54,8 +54,15 @@ function EkipList() {
     const uncertain = names
       .filter((item) => item.uncertain)
       .map((item) => item.name);
-    setSelectedNames(selected);
-    setUncertainNames(uncertain);
+
+    if (selectedGame) {
+      const newResult = {
+        game: selectedGame.label,
+        selectedNames: selected,
+        uncertainNames: uncertain,
+      };
+      setResults([...results, newResult]);
+    }
   };
 
   const handleGameChange = (selectedOption) => {
@@ -130,16 +137,29 @@ function EkipList() {
             placeholder="Select a game..."
           />
         </div>
-        <button onClick={handleSubmit}>Listeyi Oluştur</button>
+        <button onClick={handleSubmit}>Oyun Ekle</button>
       </div>
       <div className="selected-names-container">
         <h1>Menü</h1>
-        <div>
-          {selectedGame.label + ": "}
-          {selectedNames.map((name) => name + " - ")}
-          {uncertainNames.map((name) => name + " (?) - ")}
-          {" | " + selectedNames.length + " + " + uncertainNames.length + "  ?"}
-        </div>
+        {results.map((result, index) => (
+          <div key={index} className="game-container">
+            <strong>{result.game}</strong>:{" "}
+            {result.selectedNames.map((name) => name + " - ")}
+            {result.uncertainNames.map((name) => name + " (?) - ")}
+            {" | " +
+              result.selectedNames.length +
+              " + " +
+              result.uncertainNames.length +
+              " ?"}
+          </div>
+        ))}
+        <button
+          onClick={() => {
+            setResults([]);
+          }}
+        >
+          Listeyi Temizle
+        </button>
       </div>
     </div>
   );
