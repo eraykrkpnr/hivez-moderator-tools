@@ -42,6 +42,7 @@ function EkipList() {
 
   const [selectedGame, setSelectedGame] = useState(null);
   const [results, setResults] = useState([]);
+  const [isEditing, setIsEditing] = useState(null); // Track the result being edited
 
   const customStyles = {
     option: (provided) => ({
@@ -69,19 +70,12 @@ function EkipList() {
   };
 
   const handleSubmit = () => {
-    // Seçilen isimler
     const selected = names
       .filter((item) => item.selected)
       .map((item) => item.name);
 
-    // Belirsiz isimler
     const uncertain = names
       .filter((item) => item.uncertain)
-      .map((item) => item.name);
-
-    // Hem seçili hem de belirsiz olmayan isimler
-    const notSelectedOrUncertain = names
-      .filter((item) => !item.selected && !item.uncertain) // Seçilmemiş ve belirsiz olmayan isimler
       .map((item) => item.name);
 
     if (selectedGame) {
@@ -89,10 +83,42 @@ function EkipList() {
         game: selectedGame.label,
         selectedNames: selected,
         uncertainNames: uncertain,
-        notSelectedOrUncertainNames: notSelectedOrUncertain, // Seçilmeyenler de eklendi
+        editing: false, // Not in editing mode by default
       };
       setResults([...results, newResult]);
     }
+  };
+
+  const handleEditToggle = (index) => {
+    const newResults = [...results];
+    newResults[index].editing = !newResults[index].editing;
+    setResults(newResults);
+    setIsEditing(index);
+  };
+
+  const handleNameToggle = (resultIndex, name, type) => {
+    const newResults = [...results];
+    const currentResult = newResults[resultIndex];
+
+    if (type === "selected") {
+      if (currentResult.selectedNames.includes(name)) {
+        currentResult.selectedNames = currentResult.selectedNames.filter(
+          (n) => n !== name
+        );
+      } else {
+        currentResult.selectedNames.push(name);
+      }
+    } else if (type === "uncertain") {
+      if (currentResult.uncertainNames.includes(name)) {
+        currentResult.uncertainNames = currentResult.uncertainNames.filter(
+          (n) => n !== name
+        );
+      } else {
+        currentResult.uncertainNames.push(name);
+      }
+    }
+
+    setResults(newResults);
   };
 
   const handleGameChange = (selectedOption) => {
@@ -119,11 +145,7 @@ function EkipList() {
         <div className="split-list">
           <ul>
             {firstHalf.map((item, index) => (
-              <li
-                key={index}
-                className={item.selected ? "selected" : ""}
-                onClick={() => handleCheckboxChange(index, "selected")}
-              >
+              <li key={index} className={item.selected ? "selected" : ""}>
                 <input
                   type="checkbox"
                   checked={item.selected}
@@ -145,7 +167,6 @@ function EkipList() {
               <li
                 key={index + half}
                 className={item.selected ? "selected" : ""}
-                onClick={() => handleCheckboxChange(index + half, "selected")}
               >
                 <input
                   type="checkbox"
@@ -177,15 +198,41 @@ function EkipList() {
             <strong>{result.game}</strong>:{" "}
             {result.selectedNames.map((name) => name + " - ")}
             {result.uncertainNames.map((name) => name + " (?) - ")}
-            {" | " +
-              result.selectedNames.length +
-              " + " +
-              result.uncertainNames.length +
-              " ?"}
-            {/*<p>
-              {"Gelemeyenler: " +
-                result.notSelectedOrUncertainNames.map((name) => name + " - ")}
-        </p>*/}
+            <span>
+              {" | " +
+                result.selectedNames.length +
+                " + " +
+                result.uncertainNames.length +
+                " ?"}
+            </span>
+            <button onClick={() => handleEditToggle(index)}>
+              {result.editing ? "Düzenlemeyi Bitir" : "Düzenle"}
+            </button>
+            {result.editing && (
+              <div className="edit-section">
+                <h3>Oyuncuları Düzenle</h3>
+                {names.map((item, idx) => (
+                  <div key={idx} className="edit-item">
+                    <input
+                      type="checkbox"
+                      checked={result.selectedNames.includes(item.name)}
+                      onChange={() =>
+                        handleNameToggle(index, item.name, "selected")
+                      }
+                    />
+                    <label>{item.name}</label>
+                    <input
+                      type="checkbox"
+                      checked={result.uncertainNames.includes(item.name)}
+                      onChange={() =>
+                        handleNameToggle(index, item.name, "uncertain")
+                      }
+                    />
+                    <label>?</label>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         ))}
         <button

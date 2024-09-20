@@ -103,7 +103,7 @@ html {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.selected-names-container div {
+.selected-names-container {
   background-color: #404040;
   padding: 10px;
   border-radius: 5px;
@@ -126,6 +126,16 @@ html {
   margin-bottom: 10px;
 }
 
-.hidden-checkbox {
-  display: none;
+.edit-section {
+  overflow-y: scroll;
+  max-height: 400px;
+}
+
+.edit-item {
+  display: flex;
+  justify-content: left;
+  background-color: #3a3a3a;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
 }
