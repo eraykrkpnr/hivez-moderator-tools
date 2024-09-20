@@ -69,11 +69,19 @@ function EkipList() {
   };
 
   const handleSubmit = () => {
+    // Seçilen isimler
     const selected = names
       .filter((item) => item.selected)
       .map((item) => item.name);
+
+    // Belirsiz isimler
     const uncertain = names
       .filter((item) => item.uncertain)
+      .map((item) => item.name);
+
+    // Hem seçili hem de belirsiz olmayan isimler
+    const notSelectedOrUncertain = names
+      .filter((item) => !item.selected && !item.uncertain) // Seçilmemiş ve belirsiz olmayan isimler
       .map((item) => item.name);
 
     if (selectedGame) {
@@ -81,6 +89,7 @@ function EkipList() {
         game: selectedGame.label,
         selectedNames: selected,
         uncertainNames: uncertain,
+        notSelectedOrUncertainNames: notSelectedOrUncertain, // Seçilmeyenler de eklendi
       };
       setResults([...results, newResult]);
     }
@@ -173,6 +182,10 @@ function EkipList() {
               " + " +
               result.uncertainNames.length +
               " ?"}
+            {/*<p>
+              {"Gelemeyenler: " +
+                result.notSelectedOrUncertainNames.map((name) => name + " - ")}
+        </p>*/}
           </div>
         ))}
         <button
