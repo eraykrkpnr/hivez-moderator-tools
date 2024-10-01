@@ -38,11 +38,11 @@ function TeamGenerator() {
             className="name-input"
             required
           />
-          <button type="submit">Add Name</button>
+          <button type="submit">İsim ekle</button>
         </form>
 
         <div className="added-names">
-          <h3>Added Names:</h3>
+          <h3>Eklenen isimler:</h3>
           <ul>
             {names.map((name, index) => (
               <li key={index}>{name}</li>
@@ -55,17 +55,17 @@ function TeamGenerator() {
           min="2"
           value={teamCount}
           onChange={(e) => setTeamCount(Number(e.target.value))}
-          placeholder="Number of teams"
+          placeholder="Takım sayısı"
         />
 
         <div className="buttons">
-          <button onClick={generateTeams}>Generate Teams</button>
+          <button onClick={generateTeams}>Takım oluştur</button>
         </div>
       </div>
 
       <div className="column">
         <div className="generated-teams">
-          <h3>Generated Teams:</h3>
+          <h3>Oluşturulan takım:</h3>
           {teams.map((team, index) => (
             <div key={index}>
               <h4>Team {index + 1}</h4>
