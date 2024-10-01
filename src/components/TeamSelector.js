@@ -29,12 +29,12 @@ function TeamGenerator() {
   return (
     <div className="team-generator-container">
       <div className="column">
-        <h2>Team Generator</h2>
+        <h2>Takım oluşturma</h2>
         <form onSubmit={addName}>
           <input
             type="text"
             name="name"
-            placeholder="Enter name"
+            placeholder="İsim gir"
             className="name-input"
             required
           />
