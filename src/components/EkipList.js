@@ -33,6 +33,7 @@ function EkipList() {
     { name: "Westiger (Cansu)", selected: false, uncertain: false },
     { name: "Attalian (Cem)", selected: false, uncertain: false },
     { name: "Xeegn (Berkay)", selected: false, uncertain: false },
+    { name: "Kraytage (Eray)", selected: false, uncertain: false },
     { name: "Wicanydd (İlkcan)", selected: false, uncertain: false },
     { name: "RedB (Mert)", selected: false, uncertain: false },
     { name: "Tsuna (Veysel)", selected: false, uncertain: false },
