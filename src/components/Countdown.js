@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../components/Countdown.css"; // Import the CSS file
+import { db } from "../firebase"; // Ensure firebase is correctly imported here
+import { push, ref, onValue, set, remove } from "firebase/database";
 
 function Countdown() {
   const [mainHours, setMainHours] = useState(0);
@@ -37,6 +39,19 @@ function Countdown() {
     }
   };
 
+  // Function to clear the 'savedTimes' node
+  const clearDatabase = () => {
+    const savedTimesRef = ref(db, "savedTimes");
+    remove(savedTimesRef)
+      .then(() => {
+        console.log("Database cleared successfully!");
+        setSavedTimes([]); // Clear savedTimes in local state
+      })
+      .catch((error) => {
+        console.error("Error clearing database:", error);
+      });
+  };
+
   const startIntervalTimer = () => {
     const startTime = Date.now();
     setIntervalStartTime(startTime);
@@ -66,6 +81,13 @@ function Countdown() {
     const start = formatTime(mainStartTime);
     const end = formatTime(mainEndTime);
 
+    const newEntryRef = push(ref(db, "savedTimes"));
+    set(newEntryRef, {
+      title,
+      start,
+      end,
+      status: "completed", // Mark as completed
+    });
     setSavedTimes([...savedTimes, { title, start, end }]);
     setTitle("");
     resetIntervalTimer();
@@ -79,6 +101,19 @@ function Countdown() {
   };
 
   useEffect(() => {
+    const savedTimesRef = ref(db, "savedTimes");
+    onValue(savedTimesRef, (snapshot) => {
+      const data = snapshot.val();
+      const formattedData = data
+        ? Object.keys(data).map((key) => ({
+            id: key,
+            ...data[key],
+            inProgress: data[key].status === "in progress",
+          }))
+        : [];
+      setSavedTimes(formattedData);
+    });
+
     const initialTimeInMs =
       initialHours * 60 * 60 * 1000 +
       initialMinutes * 60 * 1000 +
@@ -87,6 +122,17 @@ function Countdown() {
     const mainInterval = setInterval(() => getMainTime(), 1000);
     return () => clearInterval(mainInterval);
   }, []);
+
+  useEffect(() => {
+    savedTimes.forEach((entry) => {
+      if (entry.inProgress) {
+        const elapsed = Date.now() - new Date(entry.start).getTime();
+        setMainHours(Math.floor((elapsed / (1000 * 60 * 60)) % 24));
+        setMainMinutes(Math.floor((elapsed / 1000 / 60) % 60));
+        setMainSeconds(Math.floor((elapsed / 1000) % 60));
+      }
+    });
+  }, [savedTimes]);
 
   const handleManualStart = () => {
     const initialTimeInMs =
@@ -120,6 +166,7 @@ function Countdown() {
       <div className="buttons">
         <button onClick={startIntervalTimer}>Videoyu başlat</button>
         <button onClick={saveIntervalTime}>Videoyu kaydet</button>
+        <button onClick={clearDatabase}>Veritabanını Temizle</button>
       </div>
       <ul>
         {savedTimes.map((entry, index) => (
