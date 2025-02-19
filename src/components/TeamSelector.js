@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import "./TeamSelector.css"; // CSS dosyasını ekleyin
 
