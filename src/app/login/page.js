@@ -1,4 +1,4 @@
-// src/app/login/page.js
+// src/app/login/route.js
 'use client';
 import { useState } from 'react';
 import styles from './login.module.css';

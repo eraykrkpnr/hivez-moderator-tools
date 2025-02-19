@@ -1,4 +1,4 @@
-// src/app/page.js
+// src/app/route.js
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import styles from './page.module.css';
