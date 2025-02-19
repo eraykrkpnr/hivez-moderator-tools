@@ -2,7 +2,10 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@components/*": ["src/components/*"]
+      "@components/*": [
+        "src/components/*",
+        "services/*"
+      ]
     },
     "target": "ES2017",
     "lib": [
@@ -29,10 +32,11 @@
     ]
   },
   "include": [
-    "next-env.d.ts",
-    "build/types/**/*.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "build/types/**/*.ts",
+    "next-env.d.ts",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"
