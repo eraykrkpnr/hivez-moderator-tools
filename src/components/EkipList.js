@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import CreatableSelect from "react-select/creatable";
+import { db, ref, push, set,remove, onValue } from "../firebase"; // adjust path
 import "./EkipList.css";
 
 const gameOptions = [
@@ -47,6 +48,36 @@ function EkipList() {
   const [results, setResults] = useState([]);
   const [isEditing, setIsEditing] = useState(null); // Track the result being edited
 
+  useEffect(() => {
+    const selectedUsersRef = ref(db, "/selectedusers");
+    const selectedGamesRef = ref(db, "/selectedgames");
+
+    onValue(selectedUsersRef, (snapshot) => {
+      const usersData = snapshot.val();
+      if (usersData) {
+        const usersList = Object.values(usersData).map((item) => ({
+          selectedNames: item.selected || [],
+          uncertainNames: item.uncertain || [],
+        }));
+
+        onValue(selectedGamesRef, (gameSnapshot) => {
+          const gamesData = gameSnapshot.val();
+          if (gamesData) {
+            const gamesList = Object.values(gamesData).map((item, index) => ({
+              game: item.game,
+              selectedNames: usersList[index]?.selectedNames || [],
+              uncertainNames: usersList[index]?.uncertainNames || [],
+              editing: false,
+            }));
+
+            setResults(gamesList);
+          }
+        });
+      }
+    });
+  }, []);
+
+
   const customStyles = {
     option: (provided) => ({
       ...provided,
@@ -72,24 +103,36 @@ function EkipList() {
     setNames(newNames);
   };
 
-  const handleSubmit = () => {
-    const selected = names
-      .filter((item) => item.selected)
-      .map((item) => item.name);
-
-    const uncertain = names
-      .filter((item) => item.uncertain)
-      .map((item) => item.name);
+  const handleSubmit = async () => {
+    const selected = names.filter((item) => item.selected).map((item) => item.name);
+    const uncertain = names.filter((item) => item.uncertain).map((item) => item.name);
 
     if (selectedGame) {
-      const newResult = {
+      await set(push(ref(db, "/selectedusers")), {
+        selected,
+        uncertain,
+        timestamp: Date.now()
+      });
+
+      await set(push(ref(db, "/selectedgames")), {
+        game: selectedGame.label,
+        timestamp: Date.now()
+      });
+
+      setResults([...results, {
         game: selectedGame.label,
         selectedNames: selected,
         uncertainNames: uncertain,
-        editing: false, // Not in editing mode by default
-      };
-      setResults([...results, newResult]);
+        editing: false
+      }]);
     }
+  };
+
+  // Removes data from both references and clears the local results
+  const handleClear = async () => {
+    await remove(ref(db, "/selectedgames"));
+    await remove(ref(db, "/selectedusers"));
+    setResults([]);
   };
 
   const handleEditToggle = (index) => {
@@ -138,6 +181,8 @@ function EkipList() {
         <h1>Ekip Listesi</h1>
         <div className="game-select-container">
           <CreatableSelect
+              instanceId="my-select"
+              name="my-select"
             options={gameOptions}
             value={selectedGame}
             onChange={handleGameChange}
@@ -239,9 +284,7 @@ function EkipList() {
           </div>
         ))}
         <button
-          onClick={() => {
-            setResults([]);
-          }}
+            onClick={handleClear}
         >
           Listeyi Temizle
         </button>

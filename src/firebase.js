@@ -8,6 +8,7 @@
     onValue,
     update,
     get,
+    remove
   } from "firebase/database";
 
   // Firebase configuration (replace with your actual config)
@@ -29,4 +30,4 @@
   // Initialize Realtime Database
   const db = getDatabase(app);
 
-  export { db, ref, set, push, onValue, update,get };
+  export { db, ref, set, push, onValue, update,get, remove };
