@@ -9,7 +9,12 @@ export default function KickAuthPage() {
             setIsLoading(true);
             const response = await fetch('/api/auth/kickAuth');
             if (response.ok) {
-                window.location.href = response.url;
+                const data = await response.json(); // JSON olarak yanıtı al
+                if (data.url) {
+                    window.location.href = data.url; // Dönen URL'ye yönlendir
+                }
+            } else {
+                console.error('Failed to get auth URL');
             }
         } catch (error) {
             console.error('Authentication error:', error);
