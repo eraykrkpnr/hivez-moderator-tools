@@ -1,9 +1,7 @@
-"use client";
-
 import React, { useState, useEffect, useRef } from "react";
-import "../components/Countdown.css"; // Import the CSS file
-import { db } from "../firebase"; // Ensure firebase is correctly imported here
-import { push, ref, onValue, set, remove } from "firebase/database";
+import "../components/Countdown.css";
+import { db } from "../firebase";
+import { push, ref, onValue, set, remove, get } from "firebase/database";
 
 function Countdown() {
   const [mainHours, setMainHours] = useState(0);
@@ -41,17 +39,16 @@ function Countdown() {
     }
   };
 
-  // Function to clear the 'savedTimes' node
   const clearDatabase = () => {
     const savedTimesRef = ref(db, "savedTimes");
     remove(savedTimesRef)
-      .then(() => {
-        console.log("Database cleared successfully!");
-        setSavedTimes([]); // Clear savedTimes in local state
-      })
-      .catch((error) => {
-        console.error("Error clearing database:", error);
-      });
+        .then(() => {
+          console.log("Database cleared successfully!");
+          setSavedTimes([]);
+        })
+        .catch((error) => {
+          console.error("Error clearing database:", error);
+        });
   };
 
   const startIntervalTimer = () => {
@@ -75,10 +72,10 @@ function Countdown() {
     const mainEndTime = new Date(intervalEndTime - mainTimerRef.current);
 
     const formatTime = (date) =>
-      `${date.getUTCHours().toString().padStart(2, "0")}:${date
-        .getUTCMinutes()
-        .toString()
-        .padStart(2, "0")}:${date.getUTCSeconds().toString().padStart(2, "0")}`;
+        `${date.getUTCHours().toString().padStart(2, "0")}:${date
+            .getUTCMinutes()
+            .toString()
+            .padStart(2, "0")}:${date.getUTCSeconds().toString().padStart(2, "0")}`;
 
     const start = formatTime(mainStartTime);
     const end = formatTime(mainEndTime);
@@ -86,9 +83,7 @@ function Countdown() {
     const newEntryRef = push(ref(db, "savedTimes"));
     set(newEntryRef, {
       title,
-      start,
-      end,
-      status: "completed", // Mark as completed
+      status: "completed",
     });
     setSavedTimes([...savedTimes, { title, start, end }]);
     setTitle("");
@@ -102,25 +97,45 @@ function Countdown() {
     setIntervalStartTime(null);
   };
 
+  const handleManualStart = async () => {
+    const initialTimeInMs =
+        initialHours * 60 * 60 * 1000 +
+        initialMinutes * 60 * 1000 +
+        initialSeconds * 1000;
+    startMainTimer(initialTimeInMs);
+
+    // Save the initial time to Firebase
+    await set(ref(db, "initialTime"), {
+      initialTimeInMs,
+      timestamp: Date.now(),
+    });
+  };
+
   useEffect(() => {
     const savedTimesRef = ref(db, "savedTimes");
     onValue(savedTimesRef, (snapshot) => {
       const data = snapshot.val();
       const formattedData = data
-        ? Object.keys(data).map((key) => ({
+          ? Object.keys(data).map((key) => ({
             id: key,
             ...data[key],
             inProgress: data[key].status === "in progress",
           }))
-        : [];
+          : [];
       setSavedTimes(formattedData);
     });
 
-    const initialTimeInMs =
-      initialHours * 60 * 60 * 1000 +
-      initialMinutes * 60 * 1000 +
-      initialSeconds * 1000;
-    startMainTimer(initialTimeInMs);
+    // Read the initial time from Firebase
+    const initialTimeRef = ref(db, "initialTime");
+    get(initialTimeRef).then((snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const elapsedTime = Date.now() - data.timestamp;
+        const initialTimeInMs = data.initialTimeInMs + elapsedTime;
+        startMainTimer(initialTimeInMs);
+      }
+    });
+
     const mainInterval = setInterval(() => getMainTime(), 1000);
     return () => clearInterval(mainInterval);
   }, []);
@@ -136,77 +151,69 @@ function Countdown() {
     });
   }, [savedTimes]);
 
-  const handleManualStart = () => {
-    const initialTimeInMs =
-      initialHours * 60 * 60 * 1000 +
-      initialMinutes * 60 * 1000 +
-      initialSeconds * 1000;
-    startMainTimer(initialTimeInMs);
-  };
-
   return (
-    <div className="countdown-container">
-      <div className="time-display" style={{ fontSize: "24px" }}>
-        <h2>Yayın Süresi</h2>
-        <b>{mainHours.toString().padStart(2, "0")}:</b>
-        <b>{mainMinutes.toString().padStart(2, "0")}:</b>
-        <b>{mainSeconds.toString().padStart(2, "0")}</b>
-      </div>
-      <div className="time-display">
-        <h2>Video Süresi</h2>
-        <b>{intervalHours.toString().padStart(2, "0")}:</b>
-        <b>{intervalMinutes.toString().padStart(2, "0")}:</b>
-        <b>{intervalSeconds.toString().padStart(2, "0")}</b>
-      </div>
-      <input
-        type="text"
-        className="title-input"
-        placeholder="Enter title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      <div className="buttons">
-        <button onClick={startIntervalTimer}>Videoyu başlat</button>
-        <button onClick={saveIntervalTime}>Videoyu kaydet</button>
-        <button onClick={clearDatabase}>Veritabanını Temizle</button>
-      </div>
-      <ul>
-        {savedTimes.map((entry, index) => (
-          <li key={index}>
-            <b>{entry.title}</b>: {entry.start} - {entry.end}
-          </li>
-        ))}
-      </ul>
-      <div className="time-display" style={{ paddingTop: "20px" }}>
-        <h3>Manuel Başlangıç Zamanı Ayarla</h3>
+      <div className="countdown-container">
+        <div className="time-display" style={{ fontSize: "24px" }}>
+          <h2>Yayın Süresi</h2>
+          <b>{mainHours.toString().padStart(2, "0")}:</b>
+          <b>{mainMinutes.toString().padStart(2, "0")}:</b>
+          <b>{mainSeconds.toString().padStart(2, "0")}</b>
+        </div>
+        <div className="time-display">
+          <h2>Video Süresi</h2>
+          <b>{intervalHours.toString().padStart(2, "0")}:</b>
+          <b>{intervalMinutes.toString().padStart(2, "0")}:</b>
+          <b>{intervalSeconds.toString().padStart(2, "0")}</b>
+        </div>
         <input
-          type="number"
-          placeholder="Saat"
-          value={initialHours}
-          onChange={(e) => setInitialHours(parseInt(e.target.value) || 0)}
+            type="text"
+            className="title-input"
+            placeholder="Enter title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
         />
-        :
-        <input
-          type="number"
-          placeholder="Dakika"
-          value={initialMinutes}
-          onChange={(e) => setInitialMinutes(parseInt(e.target.value) || 0)}
-        />
-        :
-        <input
-          type="number"
-          placeholder="Saniye"
-          value={initialSeconds}
-          onChange={(e) => setInitialSeconds(parseInt(e.target.value) || 0)}
-        />
-        <div
-          className="buttons"
-          style={{ justifyContent: "center", paddingTop: "12px" }}
-        >
-          <button onClick={handleManualStart}>Başlangıç Zamanını Ayarla</button>
+        <div className="buttons">
+          <button onClick={startIntervalTimer}>Videoyu başlat</button>
+          <button onClick={saveIntervalTime}>Videoyu kaydet</button>
+          <button onClick={clearDatabase}>Veritabanını Temizle</button>
+        </div>
+        <ul>
+          {savedTimes.map((entry, index) => (
+              <li key={index}>
+                <b>{entry.title}</b>: {entry.start} - {entry.end}
+              </li>
+          ))}
+        </ul>
+        <div className="time-display" style={{ paddingTop: "20px" }}>
+          <h3>Manuel Başlangıç Zamanı Ayarla</h3>
+          <input
+              type="number"
+              placeholder="Saat"
+              value={initialHours}
+              onChange={(e) => setInitialHours(parseInt(e.target.value) || 0)}
+          />
+          :
+          <input
+              type="number"
+              placeholder="Dakika"
+              value={initialMinutes}
+              onChange={(e) => setInitialMinutes(parseInt(e.target.value) || 0)}
+          />
+          :
+          <input
+              type="number"
+              placeholder="Saniye"
+              value={initialSeconds}
+              onChange={(e) => setInitialSeconds(parseInt(e.target.value) || 0)}
+          />
+          <div
+              className="buttons"
+              style={{ justifyContent: "center", paddingTop: "12px" }}
+          >
+            <button onClick={handleManualStart}>Başlangıç Zamanını Ayarla</button>
+          </div>
         </div>
       </div>
-    </div>
   );
 }
 
