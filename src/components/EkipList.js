@@ -42,6 +42,9 @@ function EkipList() {
     { name: "Tsuna (Veysel)", selected: false, uncertain: false },
     { name: "Wixiety (Doğukan)", selected: false, uncertain: false },
     { name: "Mr.Takini", selected: false, uncertain: false },
+    { name: "Pintipanda", selected: false, uncertain: false },
+    { name: "Oscoliat", selected: false, uncertain: false },
+    { name: "Quanaril", selected: false, uncertain: false },
   ]);
 
   const [selectedGame, setSelectedGame] = useState(null);
