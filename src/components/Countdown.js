@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, useRef } from "react";
 import "../components/Countdown.css";
 import { db } from "../firebase";
