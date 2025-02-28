@@ -73,11 +73,13 @@ function Countdown() {
     const mainStartTime = new Date(intervalStartTime - mainTimerRef.current);
     const mainEndTime = new Date(intervalEndTime - mainTimerRef.current);
 
-    const formatTime = (date) =>
-        `${date.getUTCHours().toString().padStart(2, "0")}:${date
-            .getUTCMinutes()
-            .toString()
-            .padStart(2, "0")}:${date.getUTCSeconds().toString().padStart(2, "0")}`;
+    // Helper function to format time from a Date object.
+    const formatTime = (date) => {
+      return `${date.getUTCHours().toString().padStart(2, "0")}:${date
+          .getUTCMinutes()
+          .toString()
+          .padStart(2, "0")}:${date.getUTCSeconds().toString().padStart(2, "0")}`;
+    };
 
     const start = formatTime(mainStartTime);
     const end = formatTime(mainEndTime);
@@ -85,8 +87,11 @@ function Countdown() {
     const newEntryRef = push(ref(db, "savedTimes"));
     set(newEntryRef, {
       title,
-      status: "completed",
+      start,
+      end,
+      status: "completed"
     });
+
     setSavedTimes([...savedTimes, { title, start, end }]);
     setTitle("");
     resetIntervalTimer();
