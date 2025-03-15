@@ -45,6 +45,7 @@ function EkipList() {
     { name: "Pintipanda", selected: false, uncertain: false },
     { name: "Oscoliat", selected: false, uncertain: false },
     { name: "Quanaril", selected: false, uncertain: false },
+    { name: "MrCoa (Burak)", selected: false, uncertain: false },
   ]);
 
   const [selectedGame, setSelectedGame] = useState(null);
