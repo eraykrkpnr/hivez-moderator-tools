@@ -92,7 +92,7 @@ function Countdown() {
     });
 
     // Update local state
-    setSavedTimes([...savedTimes, { title, start, end: "", status: "in progress" }]);
+    setSavedTimes([...savedTimes, { id: newEntryRef.key, title, start, end: "", status: "in progress" }]);
   };
 
   const saveIntervalTime = () => {
@@ -114,9 +114,9 @@ function Countdown() {
     const start = formatTime(mainStartTime);
     const end = formatTime(mainEndTime);
 
-    // Delete any in-progress entries first
+// Delete any entry with the same title and empty end field
     savedTimes.forEach(entry => {
-      if (entry.status === "in progress" || entry.end === "") {
+      if (entry.title === title && (!entry.end || entry.end === "")) {
         if (entry.id) {
           const entryRef = ref(db, `savedTimes/${entry.id}`);
           remove(entryRef);
