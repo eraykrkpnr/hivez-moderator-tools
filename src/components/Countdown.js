@@ -64,6 +64,37 @@ function Countdown() {
     }, 1000);
   };
 
+  const startAndSaveInterval = () => {
+    // Start the timer first
+    startIntervalTimer();
+
+    // Get the current time for the start value
+    const currentTime = Date.now();
+    const mainStartTime = new Date(currentTime - mainTimerRef.current);
+
+    // Helper function to format time
+    const formatTime = (date) => {
+      return `${date.getUTCHours().toString().padStart(2, "0")}:${date
+          .getUTCMinutes()
+          .toString()
+          .padStart(2, "0")}:${date.getUTCSeconds().toString().padStart(2, "0")}`;
+    };
+
+    const start = formatTime(mainStartTime);
+
+    // Save to Firebase with empty end time and "in progress" status
+    const newEntryRef = push(ref(db, "savedTimes"));
+    set(newEntryRef, {
+      title,
+      start,
+      end: "",
+      status: "in progress"
+    });
+
+    // Update local state
+    setSavedTimes([...savedTimes, { title, start, end: "", status: "in progress" }]);
+  };
+
   const saveIntervalTime = () => {
     if (!intervalStartTime) return;
 
@@ -73,7 +104,6 @@ function Countdown() {
     const mainStartTime = new Date(intervalStartTime - mainTimerRef.current);
     const mainEndTime = new Date(intervalEndTime - mainTimerRef.current);
 
-    // Helper function to format time from a Date object.
     const formatTime = (date) => {
       return `${date.getUTCHours().toString().padStart(2, "0")}:${date
           .getUTCMinutes()
@@ -84,6 +114,17 @@ function Countdown() {
     const start = formatTime(mainStartTime);
     const end = formatTime(mainEndTime);
 
+    // Delete any in-progress entries first
+    savedTimes.forEach(entry => {
+      if (entry.status === "in progress" || entry.end === "") {
+        if (entry.id) {
+          const entryRef = ref(db, `savedTimes/${entry.id}`);
+          remove(entryRef);
+        }
+      }
+    });
+
+    // Add new completed entry
     const newEntryRef = push(ref(db, "savedTimes"));
     set(newEntryRef, {
       title,
@@ -92,7 +133,12 @@ function Countdown() {
       status: "completed"
     });
 
-    setSavedTimes([...savedTimes, { title, start, end }]);
+    // Update local state with only completed entries and the new one
+    const filteredTimes = savedTimes.filter(entry =>
+        entry.status !== "in progress" && entry.end !== ""
+    );
+    setSavedTimes([...filteredTimes, { title, start, end, status: "completed" }]);
+
     setTitle("");
     resetIntervalTimer();
   };
@@ -180,7 +226,7 @@ function Countdown() {
             onChange={(e) => setTitle(e.target.value)}
         />
         <div className="buttons">
-          <button onClick={startIntervalTimer}>Videoyu başlat</button>
+          <button onClick={startAndSaveInterval}>Videoyu başlat</button>
           <button onClick={saveIntervalTime}>Videoyu kaydet</button>
           <button onClick={clearDatabase}>Veritabanını Temizle</button>
         </div>
