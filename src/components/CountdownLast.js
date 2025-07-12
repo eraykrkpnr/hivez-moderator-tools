@@ -64,31 +64,27 @@ function CountdownLast() {
     const startTimerFromTimeString = (startTimeStr) => {
         if (timerRef.current) clearInterval(timerRef.current);
 
-        // Parse the start time string to get hours, minutes, seconds
-        const [h, m, s] = startTimeStr.split(':').map(Number);
-
-        // Convert start time to seconds
-        const startTimeInSeconds = h * 3600 + m * 60 + s;
-
-        // Get the stream start reference from Firebase
         const initialTimeRef = ref(db, "initialTime");
         onValue(initialTimeRef, (snapshot) => {
             if (snapshot.exists()) {
-                const initialData = snapshot.val();
-                const streamStartTimestamp = initialData.timestamp;
+                const data = snapshot.val();
+                const streamStartTimestamp = data.timestamp;
+                const initialTimeInMs = data.initialTimeInMs || 0;
+
+                // Parse the start time (HH:MM:SS)
+                const [startH, startM, startS] = startTimeStr.split(":").map(Number);
+                const videoStartOffsetMs = (startH * 3600 + startM * 60 + startS) * 1000;
+
+                // The actual video start timestamp
+                const videoStartTimestamp = streamStartTimestamp + videoStartOffsetMs - initialTimeInMs;
 
                 timerRef.current = setInterval(() => {
-                    // Calculate current elapsed time since stream start (in seconds)
                     const now = Date.now();
-                    const elapsedSinceStreamStart = Math.floor((now - streamStartTimestamp) / 1000);
+                    const elapsedMs = now - videoStartTimestamp;
 
-                    // Calculate how long the video has been playing
-                    let videoElapsedSeconds = elapsedSinceStreamStart - startTimeInSeconds;
-
-                    // Update the timer display
-                    setHours(Math.floor(videoElapsedSeconds / 3600));
-                    setMinutes(Math.floor((videoElapsedSeconds % 3600) / 60));
-                    setSeconds(videoElapsedSeconds % 60);
+                    setHours(Math.floor((elapsedMs / (1000 * 60 * 60)) % 24));
+                    setMinutes(Math.floor((elapsedMs / (1000 * 60)) % 60));
+                    setSeconds(Math.floor((elapsedMs / 1000) % 60));
                 }, 1000);
             }
         });
